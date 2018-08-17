@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../database/dbConfig');
 const { authenticate } = require('./middlewares');
+const jwtKey = require('../_secrets/keys').jwtKey;
 
 module.exports = server => {
   server.post('/api/register', register);
@@ -21,7 +22,7 @@ function register(req, res) {
       db('users').where('id', ids[0]).first()
         .then(user => {
           const token = generateToken(user);
-          res.status(201).json(user);
+          res.status(201).json(token);
         });
     })
     .catch(err => {
@@ -33,7 +34,7 @@ function login(req, res) {
   // implement user login
   const credentials = req.body;
 
-  db('users').where({uername: credentials.username}).first()
+  db('users').where({username: credentials.username}).first()
     .then(user => {
       if (user && bcrypt.compareSync(credentials.password, user.password)) {
         const token = generateToken(user);
@@ -44,7 +45,7 @@ function login(req, res) {
     })
 }
 
-const secret = 'morebullshit';
+//const secret = jwtKey;
 
 const generateToken = user => {
   const payload = {username: user.username};
@@ -52,7 +53,7 @@ const generateToken = user => {
     expiresIn: '1h',
     jwtid: '666666'
   };
-  return jwt.sign(payload, secret, options);
+  return jwt.sign(payload, jwtKey, options);
 };
 
 function getJokes(req, res) {
