@@ -16,10 +16,13 @@ function register(req, res) {
   const hash = bcrypt.hashSync(credentials.password, 14);
   credentials.password = hash;
 
-  db('users').where('id', ids[0]).first()
-    .then(user => {
-      const token = generateToken(user);
-      res.status(201).json(user);
+  db('users').insert(credentials)
+    .then(ids => {
+      db('users').where('id', ids[0]).first()
+        .then(user => {
+          const token = generateToken(user);
+          res.status(201).json(user);
+        });
     })
     .catch(err => {
       res.send(err);
@@ -28,7 +31,18 @@ function register(req, res) {
 
 function login(req, res) {
   // implement user login
+  
 }
+
+const secret = 'morebullshit';
+
+const generateToken = user => {
+  const payload = {username: user.username};
+  const options = {
+    expiresIn: '1h',
+    jwtid: '666666'
+  };
+};
 
 function getJokes(req, res) {
   axios
