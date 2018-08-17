@@ -12,7 +12,18 @@ module.exports = server => {
 
 function register(req, res) {
   // implement user registration
-  
+  const credentials = req.body;
+  const hash = bcrypt.hashSync(credentials.password, 14);
+  credentials.password = hash;
+
+  db('users').where('id', ids[0]).first()
+    .then(user => {
+      const token = generateToken(user);
+      res.status(201).json(user);
+    })
+    .catch(err => {
+      res.send(err);
+    });
 }
 
 function login(req, res) {
