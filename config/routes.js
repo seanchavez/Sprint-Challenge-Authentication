@@ -1,5 +1,7 @@
 const axios = require('axios');
-
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const db = require('../database/dbConfig');
 const { authenticate } = require('./middlewares');
 
 module.exports = server => {
@@ -10,6 +12,7 @@ module.exports = server => {
 
 function register(req, res) {
   // implement user registration
+  
 }
 
 function login(req, res) {
