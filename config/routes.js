@@ -31,7 +31,17 @@ function register(req, res) {
 
 function login(req, res) {
   // implement user login
-  
+  const credentials = req.body;
+
+  db('users').where({uername: credentials.username}).first()
+    .then(user => {
+      if (user && bcrypt.compareSync(credentials.password, user.password)) {
+        const token = generateToken(user);
+        res.send(token);
+      } else {
+        return res.status(401).json({error: 'Incorrect credentials'});
+      }
+    })
 }
 
 const secret = 'morebullshit';
@@ -42,6 +52,7 @@ const generateToken = user => {
     expiresIn: '1h',
     jwtid: '666666'
   };
+  return jwt.sign(payload, secret, options);
 };
 
 function getJokes(req, res) {
